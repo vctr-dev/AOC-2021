@@ -8,7 +8,31 @@ function getDataFromFile(file) {
 }
 
 function iterateMatrix(matrix, fn) {
-	matrix.forEach((row) => row.forEach(fn));
+	matrix.forEach((row, y) => row.forEach((val, x) => fn(val, x, y)));
+}
+function getPoint(matrix, x, y) {
+	return matrix[y]?.[x];
+}
+
+function getAround(matrix, point, includeDiagonals = false) {
+	const left = point.x - 1;
+	const right = point.x + 1;
+	const up = point.y - 1;
+	const down = point.y + 1;
+	return [
+		{ point: { x: left, y: point.y }, val: getPoint(matrix, left, point.y) },
+		{ point: { x: right, y: point.y }, val: getPoint(matrix, right, point.y) },
+		{ point: { x: point.x, y: up }, val: getPoint(matrix, point.x, up) },
+		{ point: { x: point.x, y: down }, val: getPoint(matrix, point.x, down) },
+		...(includeDiagonals
+			? [
+					{ point: { x: left, y: up }, val: getPoint(matrix, left, up) },
+					{ point: { x: left, y: down }, val: getPoint(matrix, left, down) },
+					{ point: { x: right, y: up }, val: getPoint(matrix, right, up) },
+					{ point: { x: right, y: down }, val: getPoint(matrix, right, down) },
+			  ]
+			: []),
+	].filter(({ val }) => val !== undefined);
 }
 
 // from https://stackoverflow.com/a/48377330
@@ -45,4 +69,5 @@ module.exports = {
 	rotateClockwise,
 	rotateCounterClockwise,
 	iterateMatrix,
+	getAround,
 };
